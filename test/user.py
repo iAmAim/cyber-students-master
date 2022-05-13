@@ -23,7 +23,8 @@ class UserHandlerTest(BaseTest):
         yield self.get_app().db.users.insert_one({
             'email': self.email,
             'password': self.password,
-            'displayName': self.display_name
+            'displayName': self.display_name,
+            'disabilities': self.disabilities
         })
 
     @coroutine
@@ -41,6 +42,7 @@ class UserHandlerTest(BaseTest):
         self.password = 'testPassword'
         self.display_name = 'testDisplayName'
         self.token = 'testToken'
+        self.disabilities = 'e6d9baaa0d369b9a4ce1489eda8c90d2a941979c0f36419e'
 
         IOLoop.current().run_sync(self.register)
         IOLoop.current().run_sync(self.login)

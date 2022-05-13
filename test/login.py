@@ -9,21 +9,23 @@ from .base import BaseTest
 from api.handlers.login import LoginHandler
 
 import urllib.parse
+from api.handlers.registration import RegistrationHandler
 
 class LoginHandlerTest(BaseTest):
 
     @classmethod
     def setUpClass(self):
-        self.my_app = Application([(r'/login', LoginHandler)])
+        self.my_app = Application([(r'/login', LoginHandler), (r'/registration', RegistrationHandler)])
         super().setUpClass()
 
-    @coroutine
     def register(self):
-        yield self.get_app().db.users.insert_one({
+        body = {
             'email': self.email,
             'password': self.password,
-            'displayName': 'testDisplayName'
-        })
+            'displayName': 'testDisplayName',
+            'disabilities': 'kulang sa pansin'
+        }
+        self.fetch('/registration', method='POST', body=dumps(body))
 
     def setUp(self):
         super().setUp()
@@ -31,7 +33,7 @@ class LoginHandlerTest(BaseTest):
         self.email = 'test@test.com'
         self.password = 'testPassword'
 
-        IOLoop.current().run_sync(self.register)
+        self.register()
 
     def test_login(self):
         body = {

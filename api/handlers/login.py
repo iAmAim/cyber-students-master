@@ -3,8 +3,10 @@ from time import mktime
 from tornado.escape import json_decode, utf8
 from tornado.gen import coroutine
 from uuid import uuid4
-
+from des import DesKey
 from .base import BaseHandler
+from .utils import hashPassword
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
 class LoginHandler(BaseHandler):
 
@@ -37,7 +39,8 @@ class LoginHandler(BaseHandler):
             password = body['password']
             if not isinstance(password, str):
                 raise Exception()
-        except:
+        except Exception as e:
+            print(repr(e))
             self.send_error(400, message='You must provide an email address and password!')
             return
 
@@ -58,8 +61,10 @@ class LoginHandler(BaseHandler):
         if user is None:
             self.send_error(403, message='The email address and password are invalid!')
             return
+        hashed_pass_from_db = user['password']
+        hashed_password = hashPassword(password)
 
-        if user['password'] != password:
+        if hashed_password != hashed_pass_from_db:
             self.send_error(403, message='The email address and password are invalid!')
             return
 

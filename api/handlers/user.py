@@ -6,11 +6,20 @@ from .auth import AuthHandler
 
 class UserHandler(AuthHandler):
 
+    @coroutine
     @authenticated
     def get(self):
         self.set_status(200)
+
+        encrypted_disabilities = self.current_user['disabilities']
+        disabilities_bytes = bytes.fromhex(encrypted_disabilities)
+        disabilities_bytes_decipher_bytes = self.key.decrypt(disabilities_bytes, padding=True)
+        disabilities = disabilities_bytes_decipher_bytes.decode("utf-8")
+
         self.response['email'] = self.current_user['email']
         self.response['displayName'] = self.current_user['display_name']
+        self.response['disabilities'] = disabilities
+
         self.write_json()
 
     @coroutine
@@ -40,6 +49,8 @@ class UserHandler(AuthHandler):
         self.current_user['display_name'] = display_name
 
         self.set_status(200)
+
+
         self.response['email'] = self.current_user['email']
         self.response['displayName'] = self.current_user['display_name']
         self.write_json()

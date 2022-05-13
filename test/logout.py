@@ -23,7 +23,8 @@ class LogoutHandlerTest(BaseTest):
         yield self.get_app().db.users.insert_one({
             'email': self.email,
             'password': self.password,
-            'displayName': 'testDisplayName'
+            'displayName': 'testDisplayName',
+            'disabilities': 'testDisablitiy'
         })
 
     @coroutine
@@ -40,6 +41,7 @@ class LogoutHandlerTest(BaseTest):
         self.email = 'test@test.com'
         self.password = 'testPassword'
         self.token = 'testToken'
+        self.disabilities = 'testdisabilites'
 
         IOLoop.current().run_sync(self.register)
         IOLoop.current().run_sync(self.login)
